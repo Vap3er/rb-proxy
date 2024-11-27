@@ -1,37 +1,32 @@
-const express = require('express');
-const http = require('http');
-const https = require('https');
+const express = require("express");
+const axios = require("axios");
+const cors = require("cors");
+
 const app = express();
+const port = process.env.PORT || 3000;
 
+// Middleware
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send(`
-    <form method="post" action="/proxy">
-      <label for="url">Ziel-URL:</label>
-      <input type="text" id="url" name="url" required>
-      <button type="submit">Absenden</button>
-    </form>
-  `);
-});
+// Proxy-Endpunkt
+app.get("/proxy", async (req, res) => {
+  const targetUrl = req.query.url;
 
-app.post('/proxy', (req, res) => {
-  const targetUrl = req.body.url;
   if (!targetUrl) {
-    return res.status(400).send('Bad Request: Target URL not specified');
+    return res.status(400).json({ error: "Parameter 'url' fehlt." });
   }
 
-  const protocol = targetUrl.startsWith('https') ? https : http;
-  protocol.get(targetUrl, (proxyRes) => {
-    proxyRes.pipe(res, { end: true });
-  }).on('error', (err) => {
-    console.error('Proxy Error:', err);
-    res.status(500).send('Proxy Error');
-  });
+  try {
+    const response = await axios.get(targetUrl);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Fehler beim Abrufen der URL." });
+  }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Proxy-Server läuft auf Port ${PORT}`);
+// Server starten
+app.listen(port, () => {
+  console.log(`Proxy läuft unter http://localhost:${port}`);
 });
