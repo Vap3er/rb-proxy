@@ -1,0 +1,12 @@
+{
+  "name": "simple-proxy-server",
+  "version": "1.0.0",
+  "description": "Ein einfacher Proxy-Server ohne zusätzliche Konfiguration",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
