@@ -3,8 +3,21 @@ const http = require('http');
 const https = require('https');
 const app = express();
 
-app.use((req, res) => {
-  const targetUrl = req.url.substring(1); // Entfernt das führende "/" aus der URL
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.send(`
+    <form method="post" action="/proxy">
+      <label for="url">Ziel-URL:</label>
+      <input type="text" id="url" name="url" required>
+      <button type="submit">Absenden</button>
+    </form>
+  `);
+});
+
+app.post('/proxy', (req, res) => {
+  const targetUrl = req.body.url;
   if (!targetUrl) {
     return res.status(400).send('Bad Request: Target URL not specified');
   }
