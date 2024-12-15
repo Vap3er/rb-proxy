@@ -5,11 +5,8 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Proxy-Endpunkt
 app.get("/proxy", async (req, res) => {
   const targetUrl = req.query.url;
 
@@ -26,7 +23,6 @@ app.get("/proxy", async (req, res) => {
   }
 });
 
-// Server starten
 app.listen(port, () => {
   console.log(`Proxy läuft unter http://localhost:${port}`);
 });
